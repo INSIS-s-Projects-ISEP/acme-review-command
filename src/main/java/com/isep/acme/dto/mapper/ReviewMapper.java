@@ -12,8 +12,8 @@ import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.model.User;
 import com.isep.acme.domain.service.RatingService;
 import com.isep.acme.domain.service.UserService;
-import com.isep.acme.dto.ReviewResponse;
 import com.isep.acme.dto.request.ReviewRequest;
+import com.isep.acme.dto.response.ReviewResponse;
 
 import lombok.AllArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.isep.acme.dto;
+package com.isep.acme.dto.response;
 
 import java.time.LocalDate;
 

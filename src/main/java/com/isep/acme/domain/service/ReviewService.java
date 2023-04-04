@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
-import com.isep.acme.dto.ReviewResponse;
+import com.isep.acme.dto.response.ReviewResponse;
 
 public interface ReviewService {
 
