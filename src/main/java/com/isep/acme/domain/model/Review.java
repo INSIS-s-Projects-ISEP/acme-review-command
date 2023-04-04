@@ -15,11 +15,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Version;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
 
     @Id
@@ -30,7 +37,7 @@ public class Review {
     private long version;
 
     @Column(nullable = false)
-    private String approvalStatus;
+    private String approvalStatus = "pending";
 
     @Column(nullable = false)
     private String reviewText;
@@ -39,6 +46,7 @@ public class Review {
     private String report;
 
     @Column(nullable = false)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate publishingDate;
 
     @Column(nullable = false)
@@ -55,8 +63,6 @@ public class Review {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
     private Rating rating;
 
-    protected Review(){}
-
     public Review(Long idReview, long version, String approvalStatus, String reviewText, LocalDate publishingDate, String funFact) {
         this.idReview = Objects.requireNonNull(idReview);
         this.version = Objects.requireNonNull(version);
@@ -64,16 +70,6 @@ public class Review {
         setReviewText(reviewText);
         setPublishingDate(publishingDate);
         setFunFact(funFact);
-    }
-
-    public Review(Long idReview, long version, String approvalStatus,  String reviewText, String report, LocalDate publishingDate, String funFact, Product product, Rating rating, User user) {
-        this(idReview, version, approvalStatus, reviewText, publishingDate, funFact);
-
-        setReport(report);
-        setProduct(product);
-        setRating(rating);
-        setUser(user);
-
     }
 
     public Review(String reviewText, LocalDate publishingDate, Product product, String funFact, Rating rating, User user) {
@@ -122,5 +118,5 @@ public class Review {
         }
         return rating;
     }
-    
+
 }

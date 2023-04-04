@@ -12,9 +12,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.isep.acme.domain.model.Product;
+import com.isep.acme.domain.model.Review;
+import com.isep.acme.domain.service.ProductService;
 import com.isep.acme.domain.service.ReviewService;
-import com.isep.acme.dto.ReviewDTO;
-import com.isep.acme.dto.request.CreateReviewDTO;
+import com.isep.acme.dto.ReviewResponse;
+import com.isep.acme.dto.mapper.ReviewMapper;
+import com.isep.acme.dto.request.ReviewRequest;
+import com.isep.acme.messaging.ReviewProducer;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,31 +32,39 @@ import lombok.AllArgsConstructor;
 class ReviewController {
 
     private final ReviewService reviewService;
+    private final ProductService productService;
+
+    private final ReviewMapper reviewMapper;
+    private final ReviewProducer reviewProducer;
 
     @Operation(summary = "finds a product through its sku and shows its review by status")
     @GetMapping("/products/{sku}/reviews/{status}")
-    public ResponseEntity<List<ReviewDTO>> findById(@PathVariable(value = "sku") String sku, @PathVariable(value = "status") String status) {
+    public ResponseEntity<List<ReviewResponse>> findById(@PathVariable(value = "sku") String sku, @PathVariable(value = "status") String status) {
         var review = reviewService.getReviewsOfProduct(sku, status);
         return ResponseEntity.ok().body(review);
     }
 
     @Operation(summary = "gets review by user")
     @GetMapping("/reviews/{userId}")
-    public ResponseEntity<List<ReviewDTO>> findReviewByUser(@PathVariable(value = "userId") Long userId) {
+    public ResponseEntity<List<ReviewResponse>> findReviewByUser(@PathVariable(value = "userId") Long userId) {
         var review = reviewService.findReviewsByUser(userId);
         return ResponseEntity.ok().body(review);
     }
 
     @Operation(summary = "creates review")
     @PostMapping("/products/{sku}/reviews")
-    public ResponseEntity<ReviewDTO> createReview(@PathVariable(value = "sku") String sku, @RequestBody CreateReviewDTO createReviewDTO) {
+    public ResponseEntity<ReviewResponse> createReview(@PathVariable(value = "sku") String sku, @RequestBody ReviewRequest reviewRequest) {
 
-        var review = reviewService.create(createReviewDTO, sku);
-        if(review == null){
-            return ResponseEntity.badRequest().build();
-        }
+        Review review = reviewMapper.toEntity(reviewRequest);
+        Product product = productService.findBySku(sku).orElseThrow(() -> {
+            throw new ResourceNotFoundException(Product.class, reviewRequest.getUserID());
+        });
 
-        return new ResponseEntity<ReviewDTO>(review, HttpStatus.CREATED);
+        reviewService.createReviewForProduct(review, product);
+        reviewProducer.reviewCreated(review);
+        
+        ReviewResponse reviewResponse = reviewMapper.toResponse(review);
+        return new ResponseEntity<ReviewResponse>(reviewResponse, HttpStatus.CREATED);
     }
 
     @Operation(summary = "deletes review")
@@ -72,17 +85,17 @@ class ReviewController {
 
     @Operation(summary = "gets pedding reviews")
     @GetMapping("/reviews/pending")
-    public ResponseEntity<List<ReviewDTO>> getPendingReview(){
-        List<ReviewDTO> reviews = reviewService.findPendingReview();
+    public ResponseEntity<List<ReviewResponse>> getPendingReview(){
+        List<ReviewResponse> reviews = reviewService.findPendingReview();
         return ResponseEntity.ok().body(reviews);
     }
 
     @Operation(summary = "Accept or reject review")
     @PutMapping("/reviews/acceptreject/{reviewId}")
-    public ResponseEntity<ReviewDTO> putAcceptRejectReview(@PathVariable(value = "reviewId") Long reviewId, @RequestBody String approved){
+    public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable(value = "reviewId") Long reviewId, @RequestBody String approved){
 
         try {
-            ReviewDTO rev = reviewService.moderateReview(reviewId, approved);
+            ReviewResponse rev = reviewService.moderateReview(reviewId, approved);
             return ResponseEntity.ok().body(rev);
         }
         catch( IllegalArgumentException e ) {

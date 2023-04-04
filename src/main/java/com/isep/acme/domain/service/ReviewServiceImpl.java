@@ -14,9 +14,8 @@ import com.isep.acme.domain.model.User;
 import com.isep.acme.domain.repository.ProductRepository;
 import com.isep.acme.domain.repository.ReviewRepository;
 import com.isep.acme.domain.repository.UserRepository;
-import com.isep.acme.dto.ReviewDTO;
+import com.isep.acme.dto.ReviewResponse;
 import com.isep.acme.dto.mapper.ReviewMapper;
-import com.isep.acme.dto.request.CreateReviewDTO;
 
 import lombok.AllArgsConstructor;
 
@@ -24,55 +23,38 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
-    private final RatingService ratingService;
-    private final UserService userService;
     private final RestService restService;
 
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
 
+    private final ReviewMapper reviewMapper;
+
     @Override
     public Iterable<Review> getAll() {
         return reviewRepository.findAll();
     }
 
-    @Override
-    public ReviewDTO create(CreateReviewDTO createReviewDTO, String sku) {
-
-        Optional<Product> product = productRepository.findBySku(sku);
-        if(product.isEmpty()){
-            return null;
-        }
-
-        var user = userService.getUserId(createReviewDTO.getUserID());
-        if(user.isEmpty()){
-            return null;
-        }
-
-        Rating rating = null;
-        Optional<Rating> r = ratingService.findByRate(createReviewDTO.getRating());
-        if(r.isPresent()){
-            rating = r.get();
-        }
-
-        LocalDate date = LocalDate.now();
-        String funfact = restService.getFunFact(date);
-        if(funfact == null){
-            return null;
-        }
-
-        Review review = new Review(createReviewDTO.getReviewText(), date, product.get(), funfact, rating, user.get());
-        review = reviewRepository.save(review);
-        if(review == null){
-            return null;
-        }
-
-        return ReviewMapper.toDto(review);
+    public Review createReviewForProduct(Review review, Product product){
+        review.setProduct(product);
+        return create(review);
     }
 
     @Override
-    public List<ReviewDTO> getReviewsOfProduct(String sku, String status) {
+    public Review create(Review review) {
+
+        LocalDate publishingDate = LocalDate.now();
+        String funfact = restService.getFunFact(publishingDate);
+
+        review.setPublishingDate(publishingDate);
+        review.setFunFact(funfact);
+
+        return reviewRepository.save(review);
+    }
+
+    @Override
+    public List<ReviewResponse> getReviewsOfProduct(String sku, String status) {
 
         Optional<Product> product = productRepository.findBySku(sku);
         if(product.isEmpty()){
@@ -84,7 +66,7 @@ public class ReviewServiceImpl implements ReviewService {
             return null;
         }
 
-        return ReviewMapper.toDtoList(optReview.get());
+        return reviewMapper.toResponseList(optReview.get());
     }
 
     @Override
@@ -119,18 +101,18 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewDTO> findPendingReview(){
+    public List<ReviewResponse> findPendingReview(){
 
         Optional<List<Review>> r = reviewRepository.findPendingReviews();
         if(r.isEmpty()){
             return null;
         }
 
-        return ReviewMapper.toDtoList(r.get());
+        return reviewMapper.toResponseList(r.get());
     }
 
     @Override
-    public ReviewDTO moderateReview(Long reviewID, String approved) throws ResourceNotFoundException, IllegalArgumentException {
+    public ReviewResponse moderateReview(Long reviewID, String approved) throws ResourceNotFoundException, IllegalArgumentException {
 
         Optional<Review> r = reviewRepository.findById(reviewID);
         if(r.isEmpty()){
@@ -143,11 +125,11 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
         Review review = reviewRepository.save(r.get());
-        return ReviewMapper.toDto(review);
+        return reviewMapper.toResponse(review);
     }
 
     @Override
-    public List<ReviewDTO> findReviewsByUser(Long userID) {
+    public List<ReviewResponse> findReviewsByUser(Long userID) {
 
         Optional<User> user = userRepository.findById(userID);
         if(user.isEmpty()){
@@ -159,6 +141,6 @@ public class ReviewServiceImpl implements ReviewService {
             return null;
         }
 
-        return ReviewMapper.toDtoList(r.get());
+        return reviewMapper.toResponseList(r.get());
     }
 }

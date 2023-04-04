@@ -6,10 +6,10 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class CreateReviewDTO {
+public class ReviewRequest {
 
-    private String reviewText;
     private Long userID;
+    private String reviewText;
     private Double rating;
     
 }

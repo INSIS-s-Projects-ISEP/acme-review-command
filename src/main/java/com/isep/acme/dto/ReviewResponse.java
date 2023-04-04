@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter @Setter
 @AllArgsConstructor
-public class ReviewDTO {
+public class ReviewResponse {
 
     private Long idReview;
     private String reviewText;
