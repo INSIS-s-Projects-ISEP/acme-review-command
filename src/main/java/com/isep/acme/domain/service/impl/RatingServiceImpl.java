@@ -1,10 +1,11 @@
-package com.isep.acme.domain.service;
+package com.isep.acme.domain.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.isep.acme.domain.model.Rating;
 import com.isep.acme.domain.repository.RatingRepository;
+import com.isep.acme.domain.service.RatingService;
 
 import java.util.Optional;
 

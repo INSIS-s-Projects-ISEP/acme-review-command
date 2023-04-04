@@ -1,4 +1,4 @@
-package com.isep.acme.domain.service;
+package com.isep.acme.domain.service.impl;
 
 import java.util.Optional;
 
@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.repository.ProductRepository;
+import com.isep.acme.domain.service.ProductService;
 
 import lombok.AllArgsConstructor;
 

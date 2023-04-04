@@ -1,4 +1,4 @@
-package com.isep.acme.domain.service;
+package com.isep.acme.domain.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,6 +7,9 @@ import com.isep.acme.domain.model.AggregatedRating;
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.repository.AggregatedRatingRepository;
 import com.isep.acme.domain.repository.ProductRepository;
+import com.isep.acme.domain.service.AggregatedRatingService;
+import com.isep.acme.domain.service.ProductService;
+import com.isep.acme.domain.service.ReviewService;
 
 import java.util.Optional;
 
