@@ -35,11 +35,6 @@ public class RabbitmqConfig {
     }
 
     @Bean
-    public FanoutExchange reviewCreatedExchange() {
-        return new FanoutExchange("review.review-created");
-    }
-
-    @Bean
     public FanoutExchange productCreatedExchange() {
         return new FanoutExchange("product.product-created");
     }
@@ -54,4 +49,21 @@ public class RabbitmqConfig {
             Queue productCreatedQueue) {
         return BindingBuilder.bind(productCreatedQueue).to(productCreatedExchange);
     }
+
+
+    @Bean
+    public FanoutExchange reviewCreatedExchange() {
+        return new FanoutExchange("review.review-created");
+    }
+    
+    // @Bean
+    // public Queue reviewCreatedQueue(String intanceId) {
+    //     return new Queue("review.review-created.review-command." + intanceId, true, true, true);
+    // }
+
+    // @Bean
+    // public Binding reviewCreatedBindingReviewCreated(FanoutExchange reviewCreatedExchange,
+    //         Queue reviewCreatedQueue) {
+    //     return BindingBuilder.bind(reviewCreatedQueue).to(reviewCreatedExchange);
+    // }
 }
