@@ -38,7 +38,7 @@ public class ReviewConsumer {
 
         Review review = (Review) messageConverter.fromMessage(message);
         log.info("Review receiver: " + review);
-        reviewService.create(review);
+        reviewService.save(review);
         channel.basicAck(tag, false);
         log.info("Review created: " + review);
     }

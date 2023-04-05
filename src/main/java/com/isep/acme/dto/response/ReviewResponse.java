@@ -15,6 +15,6 @@ public class ReviewResponse {
     private LocalDate publishingDate;
     private String approvalStatus;
     private String funFact;
-    private Double rating;
+    private Double rate;
 
 }

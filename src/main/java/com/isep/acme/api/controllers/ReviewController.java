@@ -1,11 +1,8 @@
 package com.isep.acme.api.controllers;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,22 +31,8 @@ class ReviewController {
     private final ReviewService reviewService;
     private final ProductService productService;
 
-    private final ReviewMapper reviewMapper;
     private final ReviewProducer reviewProducer;
-
-    @Operation(summary = "finds a product through its sku and shows its review by status")
-    @GetMapping("/products/{sku}/reviews/{status}")
-    public ResponseEntity<List<ReviewResponse>> findById(@PathVariable(value = "sku") String sku, @PathVariable(value = "status") String status) {
-        var review = reviewService.getReviewsOfProduct(sku, status);
-        return ResponseEntity.ok().body(review);
-    }
-
-    @Operation(summary = "gets review by user")
-    @GetMapping("/reviews/{userId}")
-    public ResponseEntity<List<ReviewResponse>> findReviewByUser(@PathVariable(value = "userId") Long userId) {
-        var review = reviewService.findReviewsByUser(userId);
-        return ResponseEntity.ok().body(review);
-    }
+    private final ReviewMapper reviewMapper;
 
     @Operation(summary = "creates review")
     @PostMapping("/products/{sku}/reviews")
@@ -70,24 +53,8 @@ class ReviewController {
     @Operation(summary = "deletes review")
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<Boolean> deleteReview(@PathVariable(value = "reviewId") Long reviewId) {
-
-        Boolean reviewDeleted = reviewService.DeleteReview(reviewId);
-        if (reviewDeleted == null){
-            return ResponseEntity.notFound().build();
-        }
-
-        if (reviewDeleted == false) {
-            return ResponseEntity.unprocessableEntity().build();
-        }
-
-        return ResponseEntity.ok().body(reviewDeleted);
-    }
-
-    @Operation(summary = "gets pedding reviews")
-    @GetMapping("/reviews/pending")
-    public ResponseEntity<List<ReviewResponse>> getPendingReview(){
-        List<ReviewResponse> reviews = reviewService.findPendingReview();
-        return ResponseEntity.ok().body(reviews);
+        reviewService.deleteReview(reviewId);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Accept or reject review")
@@ -95,11 +62,9 @@ class ReviewController {
     public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable(value = "reviewId") Long reviewId, @RequestBody String approved){
 
         try {
-            ReviewResponse rev = reviewService.moderateReview(reviewId, approved);
-            return ResponseEntity.ok().body(rev);
-        }
-        catch( IllegalArgumentException e ) {
-            return ResponseEntity.badRequest().build();
+            Review review = reviewService.moderateReview(reviewId, approved);
+            ReviewResponse reviewResponse = reviewMapper.toResponse(review);
+            return ResponseEntity.ok().body(reviewResponse);
         }
         catch( ResourceNotFoundException e ) {
             return ResponseEntity.notFound().build();
