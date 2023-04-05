@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.service.ReviewService;
+import com.isep.acme.dto.mapper.ReviewMapper;
+import com.isep.acme.dto.message.ReviewMessage;
 import com.rabbitmq.client.Channel;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +27,7 @@ public class ReviewConsumer {
     private final String instanceId;
     private final ReviewService reviewService;
     private final MessageConverter messageConverter;
+    private final ReviewMapper reviewMapper;
 
     @RabbitListener(queues = "#{reviewCreatedQueue.name}", ackMode = "MANUAL")
     public void reviewCreated(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
@@ -36,10 +39,13 @@ public class ReviewConsumer {
             return;
         }
 
-        Review review = (Review) messageConverter.fromMessage(message);
-        log.info("Review receiver: " + review);
+        ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
+        log.info("Review received: " + reviewMessage);
+
+        Review review = reviewMapper.toEntity(reviewMessage);
         reviewService.save(review);
+        log.info("Review created: " + reviewMessage);
+
         channel.basicAck(tag, false);
-        log.info("Review created: " + review);
     }
 }

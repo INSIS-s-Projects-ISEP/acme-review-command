@@ -3,9 +3,12 @@ package com.isep.acme.dto.mapper;
 import org.springframework.stereotype.Component;
 
 import com.isep.acme.api.controllers.ResourceNotFoundException;
+import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.model.User;
+import com.isep.acme.domain.repository.ProductRepository;
 import com.isep.acme.domain.service.UserService;
+import com.isep.acme.dto.message.ReviewMessage;
 import com.isep.acme.dto.request.ReviewRequest;
 import com.isep.acme.dto.response.ReviewResponse;
 
@@ -16,20 +19,36 @@ import lombok.AllArgsConstructor;
 public class ReviewMapper {
 
     private final UserService userService;
+    private final ProductRepository productRepository;
 
     public Review toEntity(ReviewRequest reviewRequest){
         
-        Review review = new Review();
-
         User user = userService.getUserId(reviewRequest.getUserID()).orElseThrow(() -> {
             throw new ResourceNotFoundException(User.class, reviewRequest.getUserID());
         });
-
+        
+        Review review = new Review();
         review.setUser(user);
         review.setReviewText(reviewRequest.getReviewText());
         review.setRate(reviewRequest.getRating());
 
         return review;
+    }
+
+    public Review toEntity(ReviewMessage reviewMessage){
+
+        Product product = productRepository.findBySku(reviewMessage.getSku()).orElseThrow();
+        return new Review(
+            reviewMessage.getIdReview(),
+            reviewMessage.getApprovalStatus(),
+            reviewMessage.getReviewText(),
+            reviewMessage.getReport(),
+            reviewMessage.getPublishingDate(),
+            reviewMessage.getFunFact(),
+            product,
+            reviewMessage.getUser(),
+            reviewMessage.getRate()
+        );
     }
 
     public ReviewResponse toResponse(Review review){
@@ -39,6 +58,20 @@ public class ReviewMapper {
             review.getPublishingDate(), 
             review.getApprovalStatus(), 
             review.getFunFact(), 
+            review.getRate()
+        );
+    }
+
+    public ReviewMessage toMessage(Review review){
+        return new ReviewMessage(
+            review.getIdReview(),
+            review.getApprovalStatus(),
+            review.getReviewText(),
+            review.getReport(),
+            review.getPublishingDate(),
+            review.getFunFact(),
+            review.getProduct().getSku(),
+            review.getUser(),
             review.getRate()
         );
     }

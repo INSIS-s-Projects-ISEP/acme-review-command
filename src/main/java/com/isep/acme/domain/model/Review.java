@@ -32,9 +32,6 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idReview;
 
-    @Version
-    private long version;
-
     @Column(nullable = false)
     private String approvalStatus = "pending";
 
