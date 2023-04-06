@@ -58,6 +58,7 @@ class ReviewController {
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<Boolean> deleteReview(@PathVariable(value = "reviewId") Long reviewId) {
         reviewService.deleteReview(reviewId);
+        reviewProducer.reviewDeleted(reviewId);
         log.info("Review deleted: " + reviewId);
         return ResponseEntity.noContent().build();
     }
@@ -68,6 +69,7 @@ class ReviewController {
 
         try {
             Review review = reviewService.moderateReview(reviewId, approvalStatus);
+            reviewProducer.reviewUpdated(review);
             log.info("Review updated: " + reviewId + " Approval Status: " + approvalStatus);
 
             ReviewResponse reviewResponse = reviewMapper.toResponse(review);

@@ -19,4 +19,13 @@ public class ReviewProducer {
         ReviewMessage reviewMessage = reviewMapper.toMessage(review);
         rabbitmqService.sendMessage("review.review-created", "", reviewMessage);
     }
+
+    public void reviewUpdated(Review review){
+        ReviewMessage reviewMessage = reviewMapper.toMessage(review);
+        rabbitmqService.sendMessage("review.review-updated", "", reviewMessage);
+    }
+
+    public void reviewDeleted(Long reviewId){
+        rabbitmqService.sendMessage("review.review-deleted", "", reviewId);
+    }
 }
