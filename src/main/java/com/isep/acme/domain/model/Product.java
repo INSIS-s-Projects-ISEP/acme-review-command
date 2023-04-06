@@ -22,7 +22,7 @@ public class Product {
     private Long productID;
 
     @Column(nullable = false, unique = true)
-    public String sku;
+    private String sku;
 
     public Product(String sku) {
         this.sku = sku;
