@@ -2,12 +2,9 @@ package com.isep.acme.dto.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.isep.acme.api.controllers.ResourceNotFoundException;
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
-import com.isep.acme.domain.model.User;
 import com.isep.acme.domain.repository.ProductRepository;
-import com.isep.acme.domain.service.UserService;
 import com.isep.acme.dto.message.ReviewMessage;
 import com.isep.acme.dto.request.ReviewRequest;
 import com.isep.acme.dto.response.ReviewResponse;
@@ -18,17 +15,12 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ReviewMapper {
 
-    private final UserService userService;
     private final ProductRepository productRepository;
 
     public Review toEntity(ReviewRequest reviewRequest){
         
-        User user = userService.getUserId(reviewRequest.getUserID()).orElseThrow(() -> {
-            throw new ResourceNotFoundException(User.class, reviewRequest.getUserID());
-        });
-        
         Review review = new Review();
-        review.setUser(user);
+        review.setUser(reviewRequest.getUser());
         review.setReviewText(reviewRequest.getReviewText());
         review.setRate(reviewRequest.getRating());
 

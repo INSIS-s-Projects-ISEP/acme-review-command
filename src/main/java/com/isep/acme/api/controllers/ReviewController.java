@@ -3,14 +3,15 @@ package com.isep.acme.api.controllers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
+import com.isep.acme.domain.model.enumarate.ApprovalStatus;
 import com.isep.acme.domain.service.ProductService;
 import com.isep.acme.domain.service.ReviewService;
 import com.isep.acme.dto.mapper.ReviewMapper;
@@ -21,9 +22,11 @@ import com.isep.acme.messaging.ReviewProducer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Tag(name = "Review", description = "Endpoints for managing Review")
+@Slf4j
 @RestController
 @AllArgsConstructor
 class ReviewController {
@@ -40,29 +43,33 @@ class ReviewController {
 
         Review review = reviewMapper.toEntity(reviewRequest);
         Product product = productService.findBySku(sku).orElseThrow(() -> {
-            throw new ResourceNotFoundException(Product.class, reviewRequest.getUserID());
+            throw new ResourceNotFoundException(sku);
         });
 
         reviewService.createReviewForProduct(review, product);
         reviewProducer.reviewCreated(review);
+        log.info("Review created: " + review.getIdReview());
         
         ReviewResponse reviewResponse = reviewMapper.toResponse(review);
         return new ResponseEntity<ReviewResponse>(reviewResponse, HttpStatus.CREATED);
     }
-
+    
     @Operation(summary = "deletes review")
     @DeleteMapping("/reviews/{reviewId}")
     public ResponseEntity<Boolean> deleteReview(@PathVariable(value = "reviewId") Long reviewId) {
         reviewService.deleteReview(reviewId);
+        log.info("Review deleted: " + reviewId);
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Accept or reject review")
-    @PutMapping("/reviews/acceptreject/{reviewId}")
-    public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable(value = "reviewId") Long reviewId, @RequestBody String approved){
+    @PatchMapping("/reviews/{reviewId}/acceptreject/{approvalStatus}")
+    public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable Long reviewId, @PathVariable ApprovalStatus approvalStatus){
 
         try {
-            Review review = reviewService.moderateReview(reviewId, approved);
+            Review review = reviewService.moderateReview(reviewId, approvalStatus);
+            log.info("Review updated: " + reviewId + " Approval Status: " + approvalStatus);
+
             ReviewResponse reviewResponse = reviewMapper.toResponse(review);
             return ResponseEntity.ok().body(reviewResponse);
         }

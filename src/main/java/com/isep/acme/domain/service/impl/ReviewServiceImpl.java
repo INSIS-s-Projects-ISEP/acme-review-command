@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.isep.acme.api.controllers.ResourceNotFoundException;
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
+import com.isep.acme.domain.model.enumarate.ApprovalStatus;
 import com.isep.acme.domain.repository.ReviewRepository;
 import com.isep.acme.domain.service.RestService;
 import com.isep.acme.domain.service.ReviewService;
@@ -37,13 +38,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review moderateReview(Long reviewID, String approved){
+    public Review moderateReview(Long reviewID, ApprovalStatus approvalStatus){
 
         Review review = reviewRepository.findById(reviewID).orElseThrow(() -> {
             throw new ResourceNotFoundException("Review not found");
         });
 
-        review.setApprovalStatus(approved);
+        review.setApprovalStatus(approvalStatus);
         return reviewRepository.save(review);
     }
 }

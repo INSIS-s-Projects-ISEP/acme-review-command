@@ -8,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewRequest {
 
-    private Long userID;
+    private String user;
     private String reviewText;
     private Double rating;
     

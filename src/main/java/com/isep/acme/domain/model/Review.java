@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.isep.acme.domain.model.enumarate.ApprovalStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class Review {
     private Long idReview;
 
     @Column(nullable = false)
-    private String approvalStatus = "pending";
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @NotBlank(message = "Review Text is a mandatory attribute of Review.")
     @Size(max = 2048, message = "Review Text must not be greater than 2048 characters.")
@@ -48,14 +49,13 @@ public class Review {
 
     @Column(nullable = false)
     private String funFact;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    
+    @Column(nullable = false)
+    private String user;
 
     @Column(nullable = false)
     private Double rate = 0.0;

@@ -2,6 +2,7 @@ package com.isep.acme.domain.service;
 
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
+import com.isep.acme.domain.model.enumarate.ApprovalStatus;
 
 public interface ReviewService {
 
@@ -11,6 +12,6 @@ public interface ReviewService {
 
     void deleteReview(Long reviewId);
 
-    Review moderateReview(Long reviewID, String approved);
+    Review moderateReview(Long reviewID, ApprovalStatus approvalStatus);
 
 }

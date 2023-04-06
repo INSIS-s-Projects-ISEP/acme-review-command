@@ -35,16 +35,16 @@ public class ReviewConsumer {
         MessageProperties messageProperties = message.getMessageProperties();
         if(messageProperties.getAppId().equals(instanceId)){
             channel.basicAck(tag, false);
-            log.info("Received own message.");
+            log.info("Received own message and ignored it.");
             return;
         }
 
         ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
-        log.info("Review received: " + reviewMessage);
+        log.info("Review received: " + reviewMessage.getIdReview());
 
         Review review = reviewMapper.toEntity(reviewMessage);
         reviewService.save(review);
-        log.info("Review created: " + reviewMessage);
+        log.info("Review created: " + reviewMessage.getIdReview());
 
         channel.basicAck(tag, false);
     }
