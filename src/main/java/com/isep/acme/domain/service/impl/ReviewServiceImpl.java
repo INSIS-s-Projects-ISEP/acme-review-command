@@ -19,6 +19,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final RestService restService;
     private final ReviewRepository reviewRepository;
 
+    @Override
     public Review createReviewForProduct(Review review, Product product){
         String funfact = restService.getFunFact(review.getPublishingDate());
         

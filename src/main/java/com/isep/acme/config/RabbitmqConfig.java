@@ -56,6 +56,20 @@ public class RabbitmqConfig {
         return BindingBuilder.bind(productCreatedQueue).to(productCreatedExchange);
     }
 
+    @Bean
+    public FanoutExchange productDeletedExchange(){
+        return new FanoutExchange("product.product-deleted");
+    }
+
+    @Bean
+    public Queue productDeletedQueue(String instanceId){
+        return new Queue("product.product-deleted.product-command." + instanceId, true, true, true);
+    }
+
+    @Bean
+    public Binding bindingProductDeletedtoProductDeleted(FanoutExchange productDeletedExchange, Queue productDeletedQueue){
+        return BindingBuilder.bind(productDeletedQueue).to(productDeletedExchange);
+    }
 
     @Bean
     public FanoutExchange reviewCreatedExchange() {
@@ -71,6 +85,38 @@ public class RabbitmqConfig {
     public Binding bindingReviewCreatedtoReviewCreated(FanoutExchange reviewCreatedExchange,
             Queue reviewCreatedQueue) {
         return BindingBuilder.bind(reviewCreatedQueue).to(reviewCreatedExchange);
+    }
+
+    @Bean
+    public FanoutExchange reviewUpdatedExchange() {
+        return new FanoutExchange("review.review-updated");
+    }
+    
+    @Bean
+    public Queue reviewUpdatedQueue(String intanceId) {
+        return new Queue("review.review-updated.review-command." + intanceId, true, true, true);
+    }
+
+    @Bean
+    public Binding bindingReviewUpdatedtoReviewUpdated(FanoutExchange reviewUpdatedExchange,
+            Queue reviewUpdatedQueue) {
+        return BindingBuilder.bind(reviewUpdatedQueue).to(reviewUpdatedExchange);
+    }
+
+    @Bean
+    public FanoutExchange reviewDeletedExchange() {
+        return new FanoutExchange("review.review-deleted");
+    }
+    
+    @Bean
+    public Queue reviewDeletedQueue(String intanceId) {
+        return new Queue("review.review-deleted.review-command." + intanceId, true, true, true);
+    }
+
+    @Bean
+    public Binding bindingReviewDeletedtoReviewDeleted(FanoutExchange reviewDeletedExchange,
+            Queue reviewDeletedQueue) {
+        return BindingBuilder.bind(reviewDeletedQueue).to(reviewDeletedExchange);
     }
 
     @Bean

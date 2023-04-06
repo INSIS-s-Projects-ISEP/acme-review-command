@@ -20,5 +20,13 @@ public class ProductConsumer {
     public void productCreated(Product product){
         log.info("productReceiver: " + product);
         productService.create(product);
+        log.info("Product created: " + product);
+    }
+
+    @RabbitListener(queues = {"#{productDeletedQueue.name}"})
+    public void productDeleted(String sku){
+        log.info("productReceiver: " + sku);
+        productService.deleteBySku(sku);
+        log.info("Product deleted: " + sku);
     }
 }
