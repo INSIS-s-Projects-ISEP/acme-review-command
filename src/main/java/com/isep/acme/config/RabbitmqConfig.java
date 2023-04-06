@@ -63,7 +63,7 @@ public class RabbitmqConfig {
 
     @Bean
     public Queue productDeletedQueue(String instanceId){
-        return new Queue("product.product-deleted.product-command." + instanceId, true, true, true);
+        return new Queue("product.product-deleted.review-command." + instanceId, true, true, true);
     }
 
     @Bean
