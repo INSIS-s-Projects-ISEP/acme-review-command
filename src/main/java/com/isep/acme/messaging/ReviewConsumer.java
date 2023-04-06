@@ -48,4 +48,42 @@ public class ReviewConsumer {
 
         channel.basicAck(tag, false);
     }
+
+    public void reviewUpdated(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
+        
+        MessageProperties messageProperties = message.getMessageProperties();
+        if(messageProperties.getAppId().equals(instanceId)){
+            channel.basicAck(tag, false);
+            log.info("Received own message and ignored it.");
+            return;
+        }
+
+        ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
+        log.info("Review received: " + reviewMessage.getIdReview());
+
+        Review review = reviewMapper.toEntity(reviewMessage);
+        reviewService.moderateReview(review.getIdReview(), review.getApprovalStatus());
+        log.info("Review updated: " + reviewMessage.getIdReview());
+
+        channel.basicAck(tag, false);
+    }
+
+    public void reviewDeleted(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
+        
+        MessageProperties messageProperties = message.getMessageProperties();
+        if(messageProperties.getAppId().equals(instanceId)){
+            channel.basicAck(tag, false);
+            log.info("Received own message and ignored it.");
+            return;
+        }
+
+        ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
+        log.info("Review received: " + reviewMessage.getIdReview());
+
+        Review review = reviewMapper.toEntity(reviewMessage);
+        reviewService.deleteReview(review.getIdReview());
+        log.info("Review deleted: " + reviewMessage.getIdReview());
+
+        channel.basicAck(tag, false);
+    }
 }
