@@ -41,6 +41,18 @@ public class RabbitmqConfig {
     }
 
     @Bean
+    public MessagePostProcessor beforePublishPostProcessor(String instanceId){
+        return new MessagePostProcessor() {
+            @Override
+            public Message postProcessMessage(Message message){
+                MessageProperties messageProperties = message.getMessageProperties();
+                messageProperties.setAppId(instanceId);
+                return message;
+            }
+        };
+    }
+
+    @Bean
     public FanoutExchange productCreatedExchange() {
         return new FanoutExchange("product.product-created");
     }
@@ -119,15 +131,41 @@ public class RabbitmqConfig {
         return BindingBuilder.bind(reviewDeletedQueue).to(reviewDeletedExchange);
     }
 
+    // SAGA
+
+    // Fanout Exchange and Queues to receive created temporary votes
     @Bean
-    public MessagePostProcessor beforePublishPostProcessor(String instanceId){
-        return new MessagePostProcessor() {
-            @Override
-            public Message postProcessMessage(Message message){
-                MessageProperties messageProperties = message.getMessageProperties();
-                messageProperties.setAppId(instanceId);
-                return message;
-            }
-        };
+    public FanoutExchange temporaryVoteCreatedExchange() {
+        return new FanoutExchange("temporary-vote.temporary-vote-created");
     }
+
+    @Bean
+    public Queue temporaryVoteCreatedQueue(String instanceId) {
+        return new Queue("temporary-vote.temporary-vote-created.review-command", true, false, true);
+    }
+
+    @Bean
+    public Binding bindingTemporaryVoteCreatedToTemporaryVoteCreated(FanoutExchange temporaryVoteCreatedExchange,
+            Queue temporaryVoteCreatedQueue) {
+        return BindingBuilder.bind(temporaryVoteCreatedQueue).to(temporaryVoteCreatedExchange);
+    }
+
+    // Direct exchange and a queue to receive review created for a temporary vote
+    @Bean
+    public FanoutExchange reviewCreatedForTemporaryVoteExchange() {
+        return new FanoutExchange("review.review-created-for-temporary-vote");
+    }
+
+    @Bean
+    public Queue reviewCreatedForTemporaryVoteQueue(String instanceId) {
+        return new Queue("review.review-created-for-temporary-vote.review-command." + instanceId, true, true, true);
+    }
+
+    @Bean
+    public Binding bindingReviewCreatedForTemporaryVoteToReviewCreatedForTemporaryVote(FanoutExchange reviewCreatedForTemporaryVoteExchange,
+            Queue reviewCreatedForTemporaryVoteQueue) {
+        return BindingBuilder.bind(reviewCreatedForTemporaryVoteQueue).to(reviewCreatedForTemporaryVoteExchange);
+    }
+
+
 }
