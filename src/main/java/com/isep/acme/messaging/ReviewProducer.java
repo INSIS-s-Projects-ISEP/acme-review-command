@@ -28,4 +28,8 @@ public class ReviewProducer {
     public void reviewDeleted(Long reviewId){
         rabbitmqService.sendMessage("review.review-deleted", "", reviewId);
     }
+    
+    public void reviewCreatedForTemporaryVote(Long reviewId){
+        rabbitmqService.sendMessage("review.review-created-for-temporary-vote", "", reviewId);
+    }
 }
