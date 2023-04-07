@@ -11,10 +11,12 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import com.isep.acme.domain.model.Review;
+import com.isep.acme.domain.model.enumarate.ApprovalStatus;
 import com.isep.acme.domain.service.ReviewService;
 import com.isep.acme.dto.mapper.ReviewMapper;
+import com.isep.acme.dto.message.ReviewForTemporaryVoteMessage;
 import com.isep.acme.dto.message.TemporaryVoteMessage;
-import com.isep.acme.dto.request.ReviewRequest;
+import com.isep.acme.dto.request.ReviewForTempVoteRequest;
 import com.rabbitmq.client.Channel;
 
 import lombok.AllArgsConstructor;
@@ -42,15 +44,21 @@ public class TemporaryVoteConsumer {
         }
 
         TemporaryVoteMessage temporaryVoteMessage = (TemporaryVoteMessage) messageConverter.fromMessage(message);
-        ReviewRequest reviewRequest = temporaryVoteMessage.getReviewRequest();
+        ReviewForTempVoteRequest reviewRequest = temporaryVoteMessage.getReviewRequest();
 
         Review review = reviewMapper.toEntity(reviewRequest);
+        review.setApprovalStatus(ApprovalStatus.APPROVED);
 
         log.info("Review for Temporary Vote received: " + temporaryVoteMessage.getTemporaryVoteId());
-        reviewService.save(review);
+        reviewService.createReviewForProduct(review, review.getProduct());
 
         reviewProducer.reviewCreated(review);
-        reviewProducer.reviewCreatedForTemporaryVote(review.getIdReview());
+
+        ReviewForTemporaryVoteMessage reviewForTempVote = new ReviewForTemporaryVoteMessage();
+        reviewForTempVote.setTemporaryVoteId(temporaryVoteMessage.getTemporaryVoteId());
+        reviewForTempVote.setReviewId(review.getIdReview());
+
+        reviewProducer.reviewCreatedForTemporaryVote(reviewForTempVote);
 
         log.info("Review for Temporary Vote created: " + review.getIdReview());
         

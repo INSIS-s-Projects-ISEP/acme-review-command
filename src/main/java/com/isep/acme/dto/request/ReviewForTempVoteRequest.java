@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewRequest {
-
+public class ReviewForTempVoteRequest {
+    private String sku;
     private String user;
     private String reviewText;
     private Double rating;

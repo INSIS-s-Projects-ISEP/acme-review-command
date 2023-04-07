@@ -6,6 +6,7 @@ import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.repository.ProductRepository;
 import com.isep.acme.dto.message.ReviewMessage;
+import com.isep.acme.dto.request.ReviewForTempVoteRequest;
 import com.isep.acme.dto.request.ReviewRequest;
 import com.isep.acme.dto.response.ReviewResponse;
 
@@ -23,6 +24,19 @@ public class ReviewMapper {
         review.setUser(reviewRequest.getUser());
         review.setReviewText(reviewRequest.getReviewText());
         review.setRate(reviewRequest.getRating());
+
+        return review;
+    }
+
+    public Review toEntity(ReviewForTempVoteRequest reviewRequest){
+
+        Product product = productRepository.findBySku(reviewRequest.getSku()).orElseThrow();
+        
+        Review review = new Review();
+        review.setUser(reviewRequest.getUser());
+        review.setReviewText(reviewRequest.getReviewText());
+        review.setRate(reviewRequest.getRating());
+        review.setProduct(product);
 
         return review;
     }

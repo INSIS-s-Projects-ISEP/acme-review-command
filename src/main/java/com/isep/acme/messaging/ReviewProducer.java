@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.dto.mapper.ReviewMapper;
+import com.isep.acme.dto.message.ReviewForTemporaryVoteMessage;
 import com.isep.acme.dto.message.ReviewMessage;
 
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class ReviewProducer {
         rabbitmqService.sendMessage("review.review-deleted", "", reviewId);
     }
     
-    public void reviewCreatedForTemporaryVote(Long reviewId){
-        rabbitmqService.sendMessage("review.review-created-for-temporary-vote", "", reviewId);
+    public void reviewCreatedForTemporaryVote(ReviewForTemporaryVoteMessage reviewCreatedForTemporaryVote){
+        rabbitmqService.sendMessage("review.review-created-for-temporary-vote", "", reviewCreatedForTemporaryVote);
     }
 }

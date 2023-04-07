@@ -2,7 +2,7 @@ package com.isep.acme.dto.message;
 
 import java.util.UUID;
 
-import com.isep.acme.dto.request.ReviewRequest;
+import com.isep.acme.dto.request.ReviewForTempVoteRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +15,6 @@ import lombok.Setter;
 public class TemporaryVoteMessage {
 
     private UUID temporaryVoteId;
-    private ReviewRequest reviewRequest;
+    private ReviewForTempVoteRequest reviewRequest;
     
 }
