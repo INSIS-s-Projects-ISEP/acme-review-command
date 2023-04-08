@@ -141,7 +141,7 @@ public class RabbitmqConfig {
 
     @Bean
     public Queue temporaryVoteCreatedQueue(String instanceId) {
-        return new Queue("temporary-vote.temporary-vote-created.review-command", true, false, true);
+        return new Queue("temporary-vote.temporary-vote-created.review-command", true, false, false);
     }
 
     @Bean

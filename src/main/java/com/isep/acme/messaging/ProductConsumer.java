@@ -24,7 +24,7 @@ public class ProductConsumer {
     private final ProductService productService;
     private final ProductMapper productMapper;
 
-    @RabbitListener(queues = {"#{productCreatedQueue.name}"})
+    @RabbitListener(queues = {"#{productCreatedQueue.name}"}, ackMode = "MANUAL")
     public void productCreated (ProductMessage productMessage, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
         
         log.info("Product received: " + productMessage.getSku());
