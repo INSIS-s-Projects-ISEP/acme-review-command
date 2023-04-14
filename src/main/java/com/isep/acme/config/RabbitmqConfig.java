@@ -167,5 +167,18 @@ public class RabbitmqConfig {
         return BindingBuilder.bind(reviewCreatedForTemporaryVoteQueue).to(reviewCreatedForTemporaryVoteExchange);
     }
 
+    // Bootstrapper
+    // Product
+    @Bean
+    public FanoutExchange rpcProductExchange(){
+        return new FanoutExchange("rpc.product.review-command-bootstrapper");
+    }
+    
+    // Review
+    @Bean
+    public FanoutExchange rpcReviewExchange(){
+        return new FanoutExchange("rpc.review.review-command-bootstrapper");
+    }
+
 
 }

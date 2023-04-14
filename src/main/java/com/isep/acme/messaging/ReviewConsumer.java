@@ -40,11 +40,11 @@ public class ReviewConsumer {
         }
 
         ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
-        log.info("Review received: " + reviewMessage.getIdReview());
+        log.info("Review received: " + reviewMessage.getReviewId());
 
         Review review = reviewMapper.toEntity(reviewMessage);
         reviewService.save(review);
-        log.info("Review created: " + reviewMessage.getIdReview());
+        log.info("Review created: " + reviewMessage.getReviewId());
 
         channel.basicAck(tag, false);
     }
@@ -59,11 +59,11 @@ public class ReviewConsumer {
         }
 
         ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
-        log.info("Review received: " + reviewMessage.getIdReview());
+        log.info("Review received: " + reviewMessage.getReviewId());
 
         Review review = reviewMapper.toEntity(reviewMessage);
         reviewService.moderateReview(review.getIdReview(), review.getApprovalStatus());
-        log.info("Review updated: " + reviewMessage.getIdReview());
+        log.info("Review updated: " + reviewMessage.getReviewId());
 
         channel.basicAck(tag, false);
     }
@@ -78,11 +78,11 @@ public class ReviewConsumer {
         }
 
         ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
-        log.info("Review received: " + reviewMessage.getIdReview());
+        log.info("Review received: " + reviewMessage.getReviewId());
 
         Review review = reviewMapper.toEntity(reviewMessage);
         reviewService.deleteReview(review.getIdReview());
-        log.info("Review deleted: " + reviewMessage.getIdReview());
+        log.info("Review deleted: " + reviewMessage.getReviewId());
 
         channel.basicAck(tag, false);
     }

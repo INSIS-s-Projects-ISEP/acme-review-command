@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewMessage {
 
-    private Long idReview;
+    private Long reviewId;
     private ApprovalStatus approvalStatus;
     private String reviewText;
     private String report;
