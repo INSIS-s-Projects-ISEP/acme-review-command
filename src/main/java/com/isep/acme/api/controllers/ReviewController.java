@@ -19,6 +19,7 @@ import com.isep.acme.domain.service.ReviewService;
 import com.isep.acme.dto.mapper.ReviewMapper;
 import com.isep.acme.dto.request.ReviewRequest;
 import com.isep.acme.dto.response.ReviewResponse;
+import com.isep.acme.exception.ResourceNotFoundException;
 import com.isep.acme.messaging.ReviewProducer;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package com.isep.acme.api.controllers;
+package com.isep.acme.exception;
 
 import java.util.UUID;
 
