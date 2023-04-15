@@ -71,15 +71,11 @@ class ReviewController {
     public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable UUID reviewId, @PathVariable ApprovalStatus approvalStatus){
 
         try {
-            log.info("Salve 1");
             Review review = reviewService.moderateReview(reviewId, approvalStatus);
-            log.info("Salve 2: " + review);
             reviewProducer.reviewUpdated(review);
-            log.info("Salve 3: " + review);
             log.info("Review updated: " + reviewId + " Approval Status: " + approvalStatus);
             
             ReviewResponse reviewResponse = reviewMapper.toResponse(review);
-            log.info("Salve 4: " + reviewResponse);
             return ResponseEntity.ok().body(reviewResponse);
         }
         catch( ResourceNotFoundException e ) {
