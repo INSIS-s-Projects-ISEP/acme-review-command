@@ -1,12 +1,14 @@
 package com.isep.acme.api.controllers;
 
+import java.util.UUID;
+
 public class ResourceNotFoundException extends RuntimeException {
 
-    public ResourceNotFoundException(final String string) {
+    public ResourceNotFoundException(String string) {
         super(string);
     }
 
-    public ResourceNotFoundException(final Class<?> clazz, final long id) {
+    public ResourceNotFoundException(Class<?> clazz, UUID id) {
         super(String.format("Entity %s with id %d not found", clazz.getSimpleName(), id));
     }
 }

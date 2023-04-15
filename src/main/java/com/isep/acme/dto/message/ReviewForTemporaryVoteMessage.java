@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter @Setter
 public class ReviewForTemporaryVoteMessage {
     
-    private Long reviewId;
+    private UUID reviewId;
     private UUID temporaryVoteId;
     
 }

@@ -13,6 +13,7 @@ import com.isep.acme.domain.repository.UserRepository;
 import com.isep.acme.dto.mapper.UserViewMapper;
 
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -30,11 +31,11 @@ public class UserService implements UserDetailsService {
                 () -> new UsernameNotFoundException(String.format("User with username - %s, not found", username)));
     }
 
-    public UserView getUser(final Long userId){
+    public UserView getUser(UUID userId){
         return userViewMapper.toUserView(userRepo.getById(userId));
     }
 
-    public Optional<User> getUserId(Long user) {
+    public Optional<User> getUserId(UUID user) {
         return userRepo.findById(user);
     }
 }

@@ -1,5 +1,7 @@
 package com.isep.acme.domain.service;
 
+import java.util.UUID;
+
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.model.enumarate.ApprovalStatus;
@@ -10,8 +12,8 @@ public interface ReviewService {
 
     Review save(Review review);
 
-    void deleteReview(Long reviewId);
+    void deleteReview(UUID reviewId);
 
-    Review moderateReview(Long reviewID, ApprovalStatus approvalStatus);
+    Review moderateReview(UUID reviewId, ApprovalStatus approvalStatus);
 
 }

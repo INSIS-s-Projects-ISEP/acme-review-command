@@ -1,5 +1,7 @@
 package com.isep.acme.messaging;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.isep.acme.domain.model.Review;
@@ -26,7 +28,7 @@ public class ReviewProducer {
         rabbitmqService.sendMessage("review.review-updated", "", reviewMessage);
     }
 
-    public void reviewDeleted(Long reviewId){
+    public void reviewDeleted(UUID reviewId){
         rabbitmqService.sendMessage("review.review-deleted", "", reviewId);
     }
     

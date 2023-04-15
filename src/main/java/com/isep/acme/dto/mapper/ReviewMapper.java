@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.isep.acme.domain.model.Product;
 import com.isep.acme.domain.model.Review;
 import com.isep.acme.domain.repository.ProductRepository;
-import com.isep.acme.dto.message.ProductMessage;
 import com.isep.acme.dto.message.ReviewMessage;
 import com.isep.acme.dto.request.ReviewForTempVoteRequest;
 import com.isep.acme.dto.request.ReviewRequest;
@@ -67,7 +66,7 @@ public class ReviewMapper {
 
     public ReviewResponse toResponse(Review review){
         return new ReviewResponse(
-            review.getIdReview(),
+            review.getReviewId(),
             review.getReviewText(), 
             review.getPublishingDate(), 
             review.getApprovalStatus(), 
@@ -78,7 +77,7 @@ public class ReviewMapper {
 
     public ReviewMessage toMessage(Review review){
         return new ReviewMessage(
-            review.getIdReview(),
+            review.getReviewId(),
             review.getApprovalStatus(),
             review.getReviewText(),
             review.getReport(),

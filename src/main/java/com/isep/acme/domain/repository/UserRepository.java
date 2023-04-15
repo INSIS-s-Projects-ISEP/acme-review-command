@@ -1,21 +1,21 @@
 package com.isep.acme.domain.repository;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.isep.acme.api.controllers.ResourceNotFoundException;
 import com.isep.acme.domain.model.User;
 
-import java.util.Optional;
-
 @Repository
 @CacheConfig(cacheNames = "users")
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface UserRepository extends CrudRepository<User, UUID> {
 
     @Override
     @Caching(evict = {
@@ -25,10 +25,10 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Override
     @Cacheable
-    Optional<User> findById(Long userId);
+    Optional<User> findById(UUID userId);
 
     @Cacheable
-    default User getById(final Long userId){
+    default User getById(UUID userId){
         final Optional<User> optionalUser = findById(userId);
 
         if(optionalUser.isEmpty()){

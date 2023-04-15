@@ -1,5 +1,7 @@
 package com.isep.acme.api.controllers;
 
+import java.util.UUID;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,7 +50,7 @@ class ReviewController {
 
         reviewService.createReviewForProduct(review, product);
         reviewProducer.reviewCreated(review);
-        log.info("Review created: " + review.getIdReview());
+        log.info("Review created: " + review.getReviewId());
         
         ReviewResponse reviewResponse = reviewMapper.toResponse(review);
         return new ResponseEntity<ReviewResponse>(reviewResponse, HttpStatus.CREATED);
@@ -56,7 +58,7 @@ class ReviewController {
     
     @Operation(summary = "deletes review")
     @DeleteMapping("/reviews/{reviewId}")
-    public ResponseEntity<Boolean> deleteReview(@PathVariable(value = "reviewId") Long reviewId) {
+    public ResponseEntity<Boolean> deleteReview(@PathVariable(value = "reviewId") UUID reviewId) {
         reviewService.deleteReview(reviewId);
         reviewProducer.reviewDeleted(reviewId);
         log.info("Review deleted: " + reviewId);
@@ -65,17 +67,22 @@ class ReviewController {
 
     @Operation(summary = "Accept or reject review")
     @PatchMapping("/reviews/{reviewId}/acceptreject/{approvalStatus}")
-    public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable Long reviewId, @PathVariable ApprovalStatus approvalStatus){
+    public ResponseEntity<ReviewResponse> putAcceptRejectReview(@PathVariable UUID reviewId, @PathVariable ApprovalStatus approvalStatus){
 
         try {
+            log.info("Salve 1");
             Review review = reviewService.moderateReview(reviewId, approvalStatus);
+            log.info("Salve 2: " + review);
             reviewProducer.reviewUpdated(review);
+            log.info("Salve 3: " + review);
             log.info("Review updated: " + reviewId + " Approval Status: " + approvalStatus);
-
+            
             ReviewResponse reviewResponse = reviewMapper.toResponse(review);
+            log.info("Salve 4: " + reviewResponse);
             return ResponseEntity.ok().body(reviewResponse);
         }
         catch( ResourceNotFoundException e ) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }

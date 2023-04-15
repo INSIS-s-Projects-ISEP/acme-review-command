@@ -56,11 +56,11 @@ public class TemporaryVoteConsumer {
 
         ReviewForTemporaryVoteMessage reviewForTempVote = new ReviewForTemporaryVoteMessage();
         reviewForTempVote.setTemporaryVoteId(temporaryVoteMessage.getTemporaryVoteId());
-        reviewForTempVote.setReviewId(review.getIdReview());
+        reviewForTempVote.setReviewId(review.getReviewId());
 
         reviewProducer.reviewCreatedForTemporaryVote(reviewForTempVote);
 
-        log.info("Review for Temporary Vote created: " + review.getIdReview());
+        log.info("Review for Temporary Vote created: " + review.getReviewId());
         
     }
     

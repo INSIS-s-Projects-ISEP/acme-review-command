@@ -1,6 +1,7 @@
 package com.isep.acme.dto.message;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewMessage {
 
-    private Long reviewId;
+    private UUID reviewId;
     private ApprovalStatus approvalStatus;
     private String reviewText;
     private String report;

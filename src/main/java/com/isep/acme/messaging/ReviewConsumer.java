@@ -62,7 +62,7 @@ public class ReviewConsumer {
         log.info("Review received: " + reviewMessage.getReviewId());
 
         Review review = reviewMapper.toEntity(reviewMessage);
-        reviewService.moderateReview(review.getIdReview(), review.getApprovalStatus());
+        reviewService.moderateReview(review.getReviewId(), review.getApprovalStatus());
         log.info("Review updated: " + reviewMessage.getReviewId());
 
         channel.basicAck(tag, false);
@@ -81,7 +81,7 @@ public class ReviewConsumer {
         log.info("Review received: " + reviewMessage.getReviewId());
 
         Review review = reviewMapper.toEntity(reviewMessage);
-        reviewService.deleteReview(review.getIdReview());
+        reviewService.deleteReview(review.getReviewId());
         log.info("Review deleted: " + reviewMessage.getReviewId());
 
         channel.basicAck(tag, false);

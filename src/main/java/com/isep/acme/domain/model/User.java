@@ -16,8 +16,7 @@ public class User implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue
-    private Long userId;
+    private UUID userId;
 
     @Column(unique = true)
     @Email
