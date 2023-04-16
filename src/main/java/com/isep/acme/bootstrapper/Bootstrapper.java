@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.stereotype.Component;
 
 import com.isep.acme.domain.model.Product;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class ReviewBootstrapper implements CommandLineRunner {
+public class Bootstrapper implements CommandLineRunner, PriorityOrdered {
 
     @Value("#{rpcProductExchange.name}")
     private final String rpcProductExchange;
@@ -54,6 +55,7 @@ public class ReviewBootstrapper implements CommandLineRunner {
         log.info("Received RPC Product Response | Size: " + products.size());
 
         productRepository.saveAll(products);
+        log.info("Oxi boy: " + products);
     }
 
     private void rpcReview() throws Exception {
@@ -66,6 +68,11 @@ public class ReviewBootstrapper implements CommandLineRunner {
         log.info("Received RPC Reviews Response | Size: " + reviews.size());
 
         reviewRepository.saveAll(reviews);
+    }
+
+    @Override
+    public int getOrder() {
+        return HIGHEST_PRECEDENCE;
     }
     
 }
