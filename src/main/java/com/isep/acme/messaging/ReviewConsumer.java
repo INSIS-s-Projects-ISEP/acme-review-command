@@ -1,6 +1,7 @@
 package com.isep.acme.messaging;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -49,6 +50,7 @@ public class ReviewConsumer {
         channel.basicAck(tag, false);
     }
 
+    @RabbitListener(queues = "#{reviewUpdatedQueue.name}", ackMode = "MANUAL")
     public void reviewUpdated(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
         
         MessageProperties messageProperties = message.getMessageProperties();
@@ -68,6 +70,7 @@ public class ReviewConsumer {
         channel.basicAck(tag, false);
     }
 
+    @RabbitListener(queues = "#{reviewDeletedQueue.name}", ackMode = "MANUAL")
     public void reviewDeleted(Message message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException{
         
         MessageProperties messageProperties = message.getMessageProperties();
@@ -77,12 +80,11 @@ public class ReviewConsumer {
             return;
         }
 
-        ReviewMessage reviewMessage = (ReviewMessage) messageConverter.fromMessage(message);
-        log.info("Review received: " + reviewMessage.getReviewId());
-
-        Review review = reviewMapper.toEntity(reviewMessage);
-        reviewService.deleteReview(review.getReviewId());
-        log.info("Review deleted: " + reviewMessage.getReviewId());
+        UUID reviewId = (UUID) messageConverter.fromMessage(message);
+        
+        log.info("Review received: " + reviewId);
+        reviewService.deleteReview(reviewId);
+        log.info("Review deleted: " + reviewId);
 
         channel.basicAck(tag, false);
     }
